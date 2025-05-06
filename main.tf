@@ -14,8 +14,8 @@ resource "aws_ssm_parameter" "this" {
 }
 
 resource "aws_secretsmanager_secret" "this" {
-  name        = var.instance_secretsmanager_name
-  description = "The secret for the lightsail instances"
+  name                    = var.instance_secretsmanager_name
+  description             = "The secret for the lightsail instances"
   recovery_window_in_days = var.recovery_window_in_days
 }
 
@@ -76,14 +76,14 @@ resource "aws_lightsail_lb" "this" {
 }
 
 resource "aws_lightsail_lb_attachment" "this" {
-  for_each      = aws_lightsail_instance.this
+  for_each = aws_lightsail_instance.this
 
   lb_name       = aws_lightsail_lb.this.name
   instance_name = each.value.name
 }
 
 resource "aws_lightsail_lb_certificate" "this" {
-  count       = var.domain_name != "" ? 1 : 0
+  count = var.domain_name != "" ? 1 : 0
 
   name        = replace("crt-${var.domain_name}", ".", "-")
   lb_name     = aws_lightsail_lb.this.name
@@ -91,7 +91,7 @@ resource "aws_lightsail_lb_certificate" "this" {
 }
 
 resource "aws_lightsail_lb_certificate_attachment" "this" {
-  count            = var.domain_name != "" && var.attach_certificate_to_lb ? 1 : 0
+  count = var.domain_name != "" && var.attach_certificate_to_lb ? 1 : 0
 
   lb_name          = aws_lightsail_lb.this.name
   certificate_name = aws_lightsail_lb_certificate.this[0].name

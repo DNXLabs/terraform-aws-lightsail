@@ -12,7 +12,7 @@ variable "attach_certificate_to_lb" {
 
 variable "default_ports" {
   description = "List of ports to open in the Lightsail instance and the correspondent IP ranges"
-  type        = list(object({
+  type = list(object({
     from_port = number
     protocol  = string
     to_port   = number
@@ -23,6 +23,7 @@ variable "default_ports" {
 
 variable "lb_name" {
   description = "Name of the load balancer"
+  type        = string
   default     = ""
 }
 
@@ -34,26 +35,31 @@ variable "domain_name" {
 
 variable "instance_port" {
   description = "Port of the instance"
+  type        = number
   default     = 80
 }
 
 variable "keypair_name" {
   description = "Name of the keypair"
+  type        = string
   default     = ""
 }
 
 variable "instance_secretsmanager_name" {
   description = "Name of the secret"
+  type        = string
   default     = ""
 }
 
 variable "recovery_window_in_days" {
   description = "Recovery window in days"
+  type        = number
   default     = 0
 }
 
 variable "database_secret_ssm_parameter" {
   description = "Name of the SSM parameter for the database secret"
+  type        = string
   default     = ""
 }
 
