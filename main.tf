@@ -1,44 +1,3 @@
-resource "random_password" "this" {
-  count            = var.use_external_db ? 1 : 0
-  length           = 16
-  special          = true
-  override_special = "!#-_=+^&*.,?"
-}
-
-resource "aws_ssm_parameter" "this" {
-  count       = var.use_external_db ? 1 : 0
-  name        = var.database_secret_ssm_parameter
-  description = "The password for the lightsail databases"
-  type        = "SecureString"
-  value       = random_password.this[0].result
-}
-
-resource "aws_secretsmanager_secret" "this" {
-  name                    = var.instance_secretsmanager_name
-  description             = "The secret for the lightsail instances"
-  recovery_window_in_days = var.recovery_window_in_days
-  kms_key_id              = aws_kms_key.this.arn
-}
-
-resource "aws_kms_key" "this" {
-  description         = "KMS key for Secrets Manager encryption"
-  enable_key_rotation = true
-}
-
-resource "aws_kms_alias" "this" {
-  name          = "alias/secrets-lightsail/${var.instance_secretsmanager_name}"
-  target_key_id = aws_kms_key.this.id
-}
-
-resource "aws_lightsail_key_pair" "this" {
-  name = var.keypair_name
-}
-
-resource "aws_secretsmanager_secret_version" "this" {
-  secret_id     = aws_secretsmanager_secret.this.id
-  secret_string = aws_lightsail_key_pair.this.private_key
-}
-
 resource "aws_lightsail_instance" "this" {
   for_each = var.lightsail_instances
 
@@ -59,6 +18,10 @@ resource "aws_lightsail_instance" "this" {
   tags = {
     Name = each.value.name
   }
+}
+
+resource "aws_lightsail_key_pair" "this" {
+  name = var.keypair_name
 }
 
 resource "aws_lightsail_database" "this" {
