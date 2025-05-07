@@ -118,9 +118,4 @@ variable "lightsail_database" {
     skip_final_snapshot      = bool
   }))
   default = {}
-
-  validation {
-    condition     = var.use_external_db == false || length(var.lightsail_database) > 0
-    error_message = "You must provide at least one lightsail_database entry when use_external_db is true."
-  }
 }
