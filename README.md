@@ -19,18 +19,18 @@ This module provisions a basic infrastructure for running WordPress on AWS Light
 
 ```hcl
 module "lightsail_wordpress" {
-  source = "./modules/terraform-aws-lightsail"
+  source = "./modules/git/terraform-aws-lightsail"
 
-  keypair_name                  = "keypair-non-prd-deploy-wordpress"
-  instance_secretsmanager_name  = "keypair-lightsail-non-prd"
-  recovery_window_in_days       = 0
-  database_secret_ssm_parameter = "/non-prd/wordpress/database"
-  use_external_db               = false
+  instance_name_prefix = "wordpress-non-prd"
+  instance_count       = 1
+  instance_config      = {
+    availability_zone  = "ap-southeast-2a"
+    blueprint_id       = "wordpress"
+    bundle_id          = "nano_3_2"
+    ip_address_type    = "ipv4"
+  }
 
-  lb_name                       = "lb-wordpress-non-prd"
-  instance_port                 = 80
-
-  default_ports = [
+  default_ports_open_lightsail_instances = [
     {
       from_port = 22
       protocol  = "tcp"
@@ -39,16 +39,13 @@ module "lightsail_wordpress" {
     }
   ]
 
-  lightsail_instances = {
-    wp01 = {
-      name              = "wordpress-non-prd-01"
-      availability_zone = "ap-southeast-2a"
-      blueprint_id      = "wordpress"
-      bundle_id         = "nano_3_2"
-      ip_address_type   = "ipv4"
-    }
-  }
+  secret_manager_recovery_window_in_days   = 0
+
+  lb_name                       = "lb-wordpress-non-prd"
+  instance_port                 = 80
+  use_external_db               = false
 }
+
 ```
 
 ### With External Database and Multiples Instances (MySQL on Lightsail)
@@ -67,48 +64,40 @@ Uses user_data to configure DB and enable **phpMyAdmin** do the external db
 
 ```hcl
 module "lightsail_wordpress" {
-  source = "./modules/terraform-aws-lightsail"
+  source = "./modules/git/terraform-aws-lightsail"
 
-  keypair_name                  = "keypair-non-prd-deploy-wordpress"
-  instance_secretsmanager_name  = "keypair-lightsail-non-prd"
-  recovery_window_in_days       = 0
-  database_secret_ssm_parameter = "/non-prd/wordpress/database"
-  use_external_db               = true
+  instance_name_prefix = "wordpress-prd"
+  instance_count       = 2
+  instance_config      = {
+    availability_zone  = "ap-southeast-2a"
+    blueprint_id       = "wordpress"
+    bundle_id          = "nano_3_2"
+    ip_address_type    = "ipv4"
+  }
 
-  lb_name                       = "lb-wordpress-non-prd"
-  instance_port                 = 80
-  domain_name                   = "non-prd.mydomain.com"
-  attach_certificate_to_lb      = false #only should be true after domain validation
-
-  default_ports = [
+  default_ports_open_lightsail_instances = [
     {
       from_port = 22
       protocol  = "tcp"
       to_port   = 22
-      cidrs     = ["184.147.56.64/32"] #your ip
+      cidrs     = ["184.147.56.64/32"] #your public or private ip to access instance ssh
     }
   ]
 
-  lightsail_instances = {
-    wp01 = {
-      name              = "wordpress-non-prd-01"
-      availability_zone = "ap-southeast-2a"
-      blueprint_id      = "wordpress"
-      bundle_id         = "nano_3_2"
-      ip_address_type   = "ipv4"
-    },
-    wp02 = {
-      name              = "wordpress-non-prd-02"
-      availability_zone = "ap-southeast-2a"
-      blueprint_id      = "wordpress"
-      bundle_id         = "nano_3_2"
-      ip_address_type   = "ipv4"
-    }
-  }
+  secret_manager_recovery_window_in_days   = 0
 
+  lb_name                       = "wordpress-prd"
+  instance_port                 = 80
+  domain_name                   = "prd.mydomain.com"
+  hosted_zone_id                = "Z08817432UPMI00000000" #change to your zone
+  create_dns_record             = true  #create a cname inside the route53 to lightsail lb
+  create_certificate_record     = true  #create a certificate record inside the route53 to validate domain
+  attach_certificate_to_lb      = false #only should be true after domain validation
+
+  use_external_db               = true
   lightsail_database = {
     db01 = {
-      relational_database_name = "wordpress-db-non-prd"
+      relational_database_name = "wordpress-db-prd"
       availability_zone        = "ap-southeast-2a"
       master_database_name     = "master"
       master_username          = "admin"

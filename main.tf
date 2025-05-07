@@ -1,5 +1,9 @@
+resource "aws_lightsail_key_pair" "this" {
+  name = var.keypair_name
+}
+
 resource "aws_lightsail_instance" "this" {
-  for_each = var.lightsail_instances
+  for_each = local.lightsail_instances
 
   name              = each.value.name
   availability_zone = each.value.availability_zone
@@ -20,64 +24,13 @@ resource "aws_lightsail_instance" "this" {
   }
 }
 
-resource "aws_lightsail_key_pair" "this" {
-  name = var.keypair_name
-}
-
-resource "aws_lightsail_database" "this" {
-  for_each = var.use_external_db ? var.lightsail_database : {}
-
-  relational_database_name = each.value.relational_database_name
-  availability_zone        = each.value.availability_zone
-  master_database_name     = each.value.master_database_name
-  master_password          = random_password.this[0].result
-  master_username          = each.value.master_username
-  blueprint_id             = each.value.blueprint_id
-  bundle_id                = each.value.bundle_id
-  skip_final_snapshot      = each.value.skip_final_snapshot
-
-  tags = {
-    Name = each.value.relational_database_name
-  }
-}
-
-resource "aws_lightsail_lb" "this" {
-  name              = var.lb_name
-  health_check_path = "/"
-  instance_port     = var.instance_port
-  ip_address_type   = "ipv4"
-
-}
-
-resource "aws_lightsail_lb_attachment" "this" {
-  for_each = aws_lightsail_instance.this
-
-  lb_name       = aws_lightsail_lb.this.name
-  instance_name = each.value.name
-}
-
-resource "aws_lightsail_lb_certificate" "this" {
-  count = var.domain_name != "" ? 1 : 0
-
-  name        = replace("crt-${var.domain_name}", ".", "-")
-  lb_name     = aws_lightsail_lb.this.name
-  domain_name = var.domain_name
-}
-
-resource "aws_lightsail_lb_certificate_attachment" "this" {
-  count = var.domain_name != "" && var.attach_certificate_to_lb ? 1 : 0
-
-  lb_name          = aws_lightsail_lb.this.name
-  certificate_name = aws_lightsail_lb_certificate.this[0].name
-}
-
 resource "aws_lightsail_instance_public_ports" "this" {
   for_each = aws_lightsail_instance.this
 
   instance_name = each.value.name
 
   dynamic "port_info" {
-    for_each = var.default_ports
+    for_each = var.default_ports_open_lightsail_instances
     content {
       from_port = port_info.value.from_port
       to_port   = port_info.value.to_port
@@ -86,4 +39,3 @@ resource "aws_lightsail_instance_public_ports" "this" {
     }
   }
 }
-
