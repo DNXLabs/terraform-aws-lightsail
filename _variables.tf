@@ -10,7 +10,25 @@ variable "attach_certificate_to_lb" {
   default     = false
 }
 
-variable "default_ports" {
+variable "create_dns_record" {
+  type        = bool
+  description = "Define if the DNS entry will be created in Route 53"
+  default     = false
+}
+
+variable "create_certificate_record" {
+  type        = bool
+  description = "Define if the DNS entry will be created in Route 53 to validate the SSL certificate"
+  default     = false
+}
+
+variable "hosted_zone_id" {
+  type        = string
+  description = "ID of the hosted zone in Route53 (optional)"
+  default     = ""
+}
+
+variable "default_ports_open_lightsail_instances" {
   description = "List of ports to open in the Lightsail instance and the correspondent IP ranges"
   type = list(object({
     from_port = number
@@ -51,7 +69,7 @@ variable "instance_secretsmanager_name" {
   default     = ""
 }
 
-variable "recovery_window_in_days" {
+variable "secret_manager_recovery_window_in_days" {
   description = "Recovery window in days"
   type        = number
   default     = 0
@@ -63,15 +81,29 @@ variable "database_secret_ssm_parameter" {
   default     = ""
 }
 
-variable "lightsail_instances" {
-  description = "Mapa de instâncias Lightsail a serem criadas"
-  type = map(object({
-    name              = string
+variable "instance_name_prefix" {
+  description = "Prefix of the instance name"
+  type        = string
+}
+
+variable "instance_count" {
+  description = "Number of instances"
+  type        = number
+
+  validation {
+    condition     = var.instance_count >= 1
+    error_message = "The number of instances should be 1 or more."
+  }
+}
+
+variable "instance_config" {
+  description = "Lightsail instance parameters"
+  type = object({
     availability_zone = string
     blueprint_id      = string
     bundle_id         = string
     ip_address_type   = string
-  }))
+  })
 }
 
 variable "lightsail_database" {
