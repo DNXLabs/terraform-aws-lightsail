@@ -22,10 +22,16 @@ resource "aws_lightsail_instance" "this" {
   tags = {
     Name = each.value.name
   }
+
+  lifecycle {
+    ignore_changes = [
+      key_pair_name
+    ]
+  }
 }
 
 resource "aws_lightsail_instance_public_ports" "this" {
-  for_each = aws_lightsail_instance.this
+for_each = length(var.default_ports_open_lightsail_instances) > 0 ? aws_lightsail_instance.this : {}
 
   instance_name = each.value.name
 
