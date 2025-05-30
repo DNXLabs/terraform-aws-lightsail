@@ -22,7 +22,7 @@ resource "aws_lightsail_instance" "this" {
   add_on {
     type          = "AutoSnapshot"
     snapshot_time = var.snapthot_time
-    status        = var.enable_auto_snapshot
+    status        = var.enable_auto_snapshot ? "Enabled" : "Disabled"
   }
 
   tags = {
