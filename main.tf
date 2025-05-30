@@ -19,6 +19,12 @@ resource "aws_lightsail_instance" "this" {
     db_host     = local.selected_database.master_endpoint_address
   }) : null
 
+  add_on {
+    type          = "AutoSnapshot"
+    snapshot_time = var.snapthot_time
+    status        = var.enable_auto_snapshot
+  }
+
   tags = {
     Name = each.value.name
   }

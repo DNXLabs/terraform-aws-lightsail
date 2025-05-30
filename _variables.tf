@@ -28,6 +28,19 @@ variable "hosted_zone_id" {
   default     = ""
 }
 
+variable "snapthot_time" {
+  type        = string
+  description = "Time to take the snapshot"
+  default     = ""
+}
+
+variable "enable_auto_snapshot" {
+  type        = bool
+  description = "Enable auto snapshot"
+  default     = false
+}
+
+
 variable "default_ports_open_lightsail_instances" {
   description = "List of ports to open in the Lightsail instance and the correspondent IP ranges"
   type = list(object({
@@ -119,3 +132,4 @@ variable "lightsail_database" {
   }))
   default = {}
 }
+
