@@ -133,3 +133,14 @@ variable "lightsail_database" {
   default = {}
 }
 
+variable "lb_ip_address_type" {
+  type        = string
+  default     = "ipv4"
+  description = "IP address type of the load balancer"
+}
+
+variable "lb_health_check_path" {
+  type        = string
+  default.    = "/"
+  description = "Health check path for the load balancer"
+}
