@@ -141,6 +141,6 @@ variable "lb_ip_address_type" {
 
 variable "lb_health_check_path" {
   type        = string
-  default.    = "/"
+  default     = "/"
   description = "Health check path for the load balancer"
 }
