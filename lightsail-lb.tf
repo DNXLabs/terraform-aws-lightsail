@@ -1,9 +1,9 @@
 
 resource "aws_lightsail_lb" "this" {
   name              = var.lb_name
-  health_check_path = "/"
+  health_check_path = var.lb_health_check_path
   instance_port     = var.instance_port
-  ip_address_type   = "ipv4"
+  ip_address_type   = var.lb_ip_address_type
 }
 
 resource "aws_lightsail_lb_attachment" "this" {
