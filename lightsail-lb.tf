@@ -16,9 +16,10 @@ resource "aws_lightsail_lb_attachment" "this" {
 resource "aws_lightsail_lb_certificate" "this" {
   count = var.domain_name != "" ? 1 : 0
 
-  name        = replace("crt-${var.domain_name}", ".", "-")
-  lb_name     = aws_lightsail_lb.this.name
-  domain_name = var.domain_name
+  name                      = replace("crt-${var.domain_name}", ".", "-")
+  lb_name                   = aws_lightsail_lb.this.name
+  domain_name               = var.domain_name
+  subject_alternative_names = var.subject_alternative_names
 }
 
 resource "aws_lightsail_lb_certificate_attachment" "this" {

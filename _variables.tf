@@ -40,7 +40,6 @@ variable "enable_auto_snapshot" {
   default     = false
 }
 
-
 variable "default_ports_open_lightsail_instances" {
   description = "List of ports to open in the Lightsail instance and the correspondent IP ranges"
   type = list(object({
@@ -62,6 +61,12 @@ variable "domain_name" {
   description = "The domain name for the certificate"
   type        = string
   default     = ""
+}
+
+variable "lb_subject_alternative_names" {
+  type        = list(string)
+  description = "Subject alternative domain names for the certificate of the LB"
+  default     = []
 }
 
 variable "instance_port" {
