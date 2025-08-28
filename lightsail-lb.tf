@@ -16,7 +16,7 @@ resource "aws_lightsail_lb_attachment" "this" {
 resource "aws_lightsail_lb_certificate" "this" {
   count = var.domain_name != "" ? 1 : 0
 
-  name                      = replace("crt-${var.domain_name}", ".", "-")
+  name                      = try(var.lb_certificate_name ,replace("crt-${var.domain_name}", ".", "-"))
   lb_name                   = aws_lightsail_lb.this.name
   domain_name               = var.domain_name
   subject_alternative_names = var.lb_subject_alternative_names
