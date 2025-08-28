@@ -87,22 +87,10 @@ variable "keypair_name" {
   default     = ""
 }
 
-variable "instance_secretsmanager_name" {
-  description = "Name of the secret"
-  type        = string
-  default     = ""
-}
-
 variable "secret_manager_recovery_window_in_days" {
   description = "Recovery window in days"
   type        = number
   default     = 0
-}
-
-variable "database_secret_ssm_parameter" {
-  description = "Name of the SSM parameter for the database secret"
-  type        = string
-  default     = ""
 }
 
 variable "instance_name_prefix" {
