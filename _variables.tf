@@ -69,6 +69,12 @@ variable "lb_subject_alternative_names" {
   default     = []
 }
 
+variable "lb_certificate_name" {
+  type        = string
+  description = "Optional variable for setting the name of the loadbalancer's certificate"
+  default     = null
+}
+
 variable "instance_port" {
   description = "Port of the instance"
   type        = number
