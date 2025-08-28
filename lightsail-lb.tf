@@ -20,6 +20,7 @@ resource "aws_lightsail_lb_certificate" "this" {
   lb_name                   = aws_lightsail_lb.this.name
   domain_name               = var.domain_name
   subject_alternative_names = var.lb_subject_alternative_names
+  domain_validation_records
 }
 
 resource "aws_lightsail_lb_certificate_attachment" "this" {
