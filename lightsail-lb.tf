@@ -19,7 +19,7 @@ resource "aws_lightsail_lb_certificate" "this" {
   name                      = replace("crt-${var.domain_name}", ".", "-")
   lb_name                   = aws_lightsail_lb.this.name
   domain_name               = var.domain_name
-  subject_alternative_names = var.subject_alternative_names
+  subject_alternative_names = var.lb_subject_alternative_names
 }
 
 resource "aws_lightsail_lb_certificate_attachment" "this" {
